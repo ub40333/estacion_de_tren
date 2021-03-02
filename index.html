@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>3D train station...</title>
+
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <script src='https://threejs.org/examples/js/libs/stats.min.js'></script>
+    <div id="info"></div>
+    <div class="main-container">
+    <div class="help-icon-container">
+    <!-- Icon made by Freepik from www.flaticon.com -->
+    <img src="https://dl.dropbox.com/s/e3c03qhwx46b5uu/help.png" alt="help-icon" />
+    </div>
+      <div class="title-container">
+        <p id="title">3D train station</p>
+      </div>
+      <div class="help-container">
+        <p id="description">Which graphics should I choose?  Well, if you have a device like an iPhone 7 or better, you can choose high graphics. Otherwise, try running my code at low / medium graphics depending on how weak your device is.</p>
+        <button id="OK">OK</button>
+      </div>
+      <div class="settings-container">
+        <p id="text">Select graphics</p>
+        <div class="settings">Low</div>
+        <div class="settings">Medium</div>
+        <div class="settings">High</div>
+      </div>
+      <div id="loading-container">
+        <progress value="0" min='0' max="100" id="progress">0%</progress>
+        <p id="progress-info">0%</p>
+      </div>
+    </div>
+    <style>
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .help-container {
+      position: relative;
+      display: none;
+      margin: 22vh auto;
+      width: 50%;
+      height: 180px;
+      z-index: 9999;
+    }
+
+    #OK {
+      position: relative;
+      float: right;
+      width: 75px;
+      height: 25px;
+      background: #3e84b3;
+      color: #e8ee9c;
+    cursor: pointer;
+    }
+
+  #OK:hover {
+    background: #30668a;
+  }
+
+    #OK:focus {
+      outline: none;
+    }
+
+    #description {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      left: 0;
+      top: 0;
+      color: #fdfdfd;
+    }
+
+    .title-container {
+      position: relative;
+      margin: 6vh auto 0;
+      width: 50%;
+      height: 40px;
+      font-size: 20px;
+      font-weight: 600;
+      color: #cecece;
+      border-radius: 20px;
+      border: 3px solid #bfbfbf;
+    }
+
+    #title {
+      position: relative;
+      margin: 10px auto 0;
+      width: 100%;
+      height: 50%;
+      text-align: center;
+      font-size: 16px;
+      text-shadow: -1px 0px 3px #acacac, 1px 0px 3px #acacac, 0px 1px 3px #acacac, 0px -1px 3px #acacac;
+    }
+
+    .help-icon-container {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      top: 10px;
+      left: calc(100% - 50px);
+      z-index: 999999;
+    cursor: pointer;
+    }
+
+    img {
+      position: relative;
+      top: 0;
+      left: 0;
+      width: 40px;
+      height: 40px;
+    }
+
+    #с {
+      position: relative;
+      top: 0;
+      left: 0;
+      display: block;
+    }
+
+    #info {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9;
+      display: none;
+    }
+
+    .main-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 99999;
+      background: black;
+    }
+
+    .settings-container {
+      position: relative;
+      margin: 25vh auto;
+      width: 50%;
+      height: 235px;
+      z-index: 9999;
+    }
+
+    #text {
+      position: relative;
+      margin: 0 auto;
+      user-select: none;
+      top: 5px;
+      width: 100%;
+      text-align: center;
+      height: 25px;
+      font-weight: 900;
+      font-size: 24px;
+      white-space: nowrap;
+      color: #cecece;
+    }
+
+    .settings {
+      position: relative;
+      user-select: none;
+      cursor: pointer;
+      top: 10px;
+      margin: 20px auto;
+      width: 90%;
+      height: 30px;
+      font-size: 24px;
+      font-weight: 900;
+      text-align: center;
+      color: #cecece;
+      border: 5px solid #bfbfbf;
+      padding-top: 1px;
+      border-radius: 25px;
+    }
+
+    .settings:hover {
+      background: #161616;
+    }
+
+    #loading-container {
+      position: relative;
+      margin: 41vh auto;
+      display: none;
+      width: 70%;
+      height: 100px;
+      border: 5px solid #bfbfbf;
+      border-radius: 25px;
+    }
+
+    #progress {
+      position: relative;
+      display: block;
+      top: 15px;
+      width: 80%;
+      height: 30px;
+      margin: 0 auto;
+    }
+
+    #progress-info {
+      position: relative;
+      margin: 0 auto;
+      top: 34px;
+      text-align: center;
+      font-weight: 900;
+      width: 50%;
+      height: 20px;
+      color: #cecece;
+    }
+
+    @media all and (max-width: 600px) {
+      #text {
+        font-size: 20px;
+        top: 10px;
+      }
+    }
+
+    @media all and (max-width: 500px) {
+      .settings {
+        font-size: 20px;
+        padding-top: 3px;
+        height: 28px;
+      }
+    }
+
+    @media all and (max-width: 460px) {
+      #text {
+        font-size: 16px;
+        top: 15px;
+      }
+    }
+
+    @media all and (max-width: 375px) {
+      #text {
+        font-size: 12px;
+        top: 20px;
+      }
+    }
+
+    @media all and (max-width: 350px) {
+      .settings {
+        font-size: 16px;
+        padding-top: 6px;
+        height: 25px;
+      }
+    }
+
+    @media all and (max-width: 250px) {
+      .settings {
+        font-size: 12px;
+        padding-top: 8px;
+        height: 23px;
+      }
+
+      #text {
+        font-size: 10px;
+        top: 25px;
+      }
+
+      #title {
+        font-size: 12px;
+        margin: 12px auto 0;
+      }
+    }
+
+    </style>
+    <script type="module">
+
+      import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r125/build/three.module.js';
+      import {OrbitControls} from 'https://threejsfundamentals.org/threejs/resources/threejs/r125/examples/jsm/controls/OrbitControls.js';
+      import {GLTFLoader} from 'https://threejsfundamentals.org/threejs/resources/threejs/r125/examples/jsm/loaders/GLTFLoader.js'
+
+      const main = () => {
+        const canvas = document.getElementById('c');
+
+        const settingsContainer = document.querySelector('.settings-container');
+        const mainContainer = document.querySelector('.main-container');
+        const loadingContainer = document.getElementById('loading-container');
+        const helpIconContainer = document.querySelector('.help-icon-container');
+        const helpContainer = document.querySelector('.help-container');
+        const titleContainer = document.querySelector('.title-container');
+
+        const OkButton = document.getElementById('OK');
+        const progress = document.getElementById('progress');
+        const settings = document.querySelectorAll('.settings');
+
+        const progressInfo = document.getElementById('progress-info');
+        const statsInfo = document.getElementById('info');
+
+        helpIconContainer.onclick = () => {
+          helpContainer.style.display = 'block';
+          settingsContainer.style.display = 'none'
+        };
+        OkButton.onclick = () => {
+          helpContainer.style.display = '';
+          settingsContainer.style.display = 'block'
+        };
+
+        let choice = null;
+        let stats = new Stats();
+
+        for(const setting of settings) {
+          setting.onclick = e => {
+            choice = e.srcElement.textContent;
+            setTimeout( () => {
+              makeScene();
+              settingsContainer.style.display = titleContainer.style.display = helpIconContainer.style.display = 'none';
+              loadingContainer.style.display = 'block';
+            }, 250 );
+          };
+        }
+
+        const timer = setInterval( () => {
+          if (progress.value >= 99.87) {
+            updateProgress(progress, progressInfo, 100 - progress.value);
+            setTimeout( () => {
+              mainContainer.style.display = 'none';
+              statsInfo.style.display = 'block';
+              stats = new Stats();
+              statsInfo.append(stats.dom);
+              clearInterval(timer);
+            } , 300 );
+          }
+        }, 1000 );
+
+        const updateProgress = (progressbar, elem, n) => elem.textContent = (progressbar.value += n).toFixed(2) + '%';
+
+        const makeScene = () => {
+
+          const w = window.innerWidth;
+          const h = window.innerHeight;
+
+          const PI = Math.PI;
+
+          const antialias = choice !== 'Low';
+
+          const renderer = new THREE.WebGLRenderer({canvas, antialias});
+          renderer.setSize(w, h);
+          renderer.setPixelRatio(window.devicePixelRatio);
+
+          renderer.shadowMap.enabled = choice !== 'Low';
+
+          if (choice === 'High') {
+            renderer.shadowMapSoft = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+          }
+
+          const fov = 60;
+          const aspect = w / h;
+          const near = 1;
+          const far = 12000;
+
+          const camera = new THREE.PerspectiveCamera(fov,aspect,near,far);
+          camera.position.set(0, 170, 400);
+
+          const controls = new OrbitControls(camera, canvas);
+          controls.target.set(0, 50, -15);
+          controls.update();
+
+          const scene = new THREE.Scene();
+          scene.background = new THREE.Color('black');
+
+          const textureLoader = new THREE.TextureLoader();
+
+          const stairTextures = [
+            textureLoader.load('https://dl.dropbox.com/s/ih2e55nhm69m6kp/stair_texture.jpg'),
+            textureLoader.load('https://dl.dropbox.com/s/ih2e55nhm69m6kp/stair_texture.jpg'),
+            textureLoader.load('https://dl.dropbox.com/s/ih2e55nhm69m6kp/stair_texture.jpg'),
+            textureLoader.load('https://dl.dropbox.com/s/ih2e55nhm69m6kp/stair_texture.jpg'),
+            textureLoader.load('https://dl.dropbox.com/s/ih2e55nhm69m6kp/stair_texture.jpg'),
+            textureLoader.load('https://dl.dropbox.com/s/ih2e55nhm69m6kp/stair_texture.jpg'),
+          ];
+
+          for(const texture of stairTextures) {
+            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+            texture.minFilter = THREE.LinearMipmapLinearFilter;
+            texture.anisotropy = choice === 'High' ? renderer.capabilities.getMaxAnisotropy() : choice === 'Medium' ? 4 : 1;
+            updateProgress(progress, progressInfo, 0.248);
+          }
+
+          stairTextures[0].repeat.set(0.5, 0.3);
+          stairTextures[1].repeat.set(0.5, 0.3);
+          stairTextures[2].repeat.set(3, 0.3);
+          stairTextures[3].repeat.set(3, 0.3);
+          stairTextures[4].repeat.set(3, 0.3);
+          stairTextures[5].repeat.set(3, 0.3);
+
+          const color = choice === 'Low' ? 0x393939 : choice === 'Medium' ? 0x262626 : 0x131313;
+
+          const stairMaterials = [
+            new THREE.MeshBasicMaterial({map: stairTextures[0], color}),
+            new THREE.MeshBasicMaterial({map: stairTextures[1], color}),
+            new THREE.MeshBasicMaterial({map: stairTextures[2], color}),
+            new THREE.MeshBasicMaterial({map: stairTextures[3], color}),
+            new THREE.MeshBasicMaterial({map: stairTextures[4], color}),
+            new THREE.MeshBasicMaterial({map: stairTextures[5], color}),
+          ];
+
+          const makeStairs = (w, h, d, x, y, z, needNewTextures, s1, s2, s3, s4, s5, s6, materials) => {
+            const geo = new THREE.BoxBufferGeometry(w,h,d);
+
+            if (needNewTextures) {
+              const stairTextures = [
+                textureLoader.load('https://dl.dropbox.com/s/ih2e55nhm69m6kp/stair_texture.jpg'),
+                textureLoader.load('https://dl.dropbox.com/s/ih2e55nhm69m6kp/stair_texture.jpg'),
+                textureLoader.load('https://dl.dropbox.com/s/ih2e55nhm69m6kp/stair_texture.jpg'),
+                textureLoader.load('https://dl.dropbox.com/s/ih2e55nhm69m6kp/stair_texture.jpg'),
+                textureLoader.load('https://dl.dropbox.com/s/ih2e55nhm69m6kp/stair_texture.jpg'),
+                textureLoader.load('https://dl.dropbox.com/s/ih2e55nhm69m6kp/stair_texture.jpg'),
+              ];
+
+              for(const texture of stairTextures) {
+                texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+                texture.minFilter = THREE.LinearMipmapLinearFilter;
+                texture.anisotropy = choice === 'High' ? renderer.capabilities.getMaxAnisotropy() : choice === 'Medium' ? 4 : 1;
+              }
+
+              stairTextures[0].repeat.set(...s1);
+              stairTextures[1].repeat.set(...s2);
+              stairTextures[2].repeat.set(...s3);
+              stairTextures[3].repeat.set(...s4);
+              stairTextures[4].repeat.set(...s5);
+              stairTextures[5].repeat.set(...s6);
+
+              const color = choice === 'Low' ? 0x393939 : choice === 'Medium' ? 0x262626 : 0x131313;
+
+              const stairMaterials = [
+                new THREE.MeshBasicMaterial({map: stairTextures[0], color}),
+                new THREE.MeshBasicMaterial({map: stairTextures[1], color}),
+                new THREE.MeshBasicMaterial({map: stairTextures[2], color}),
+                new THREE.MeshBasicMaterial({map: stairTextures[3], color}),
+                new THREE.MeshBasicMaterial({map: stairTextures[4], color}),
+                new THREE.MeshBasicMaterial({map: stairTextures[5], color}),
+              ];
+
+              const stair = new THREE.Mesh(geo, stairMaterials);
+
+              stair.position.x = x;
+              stair.position.y = y;
+              stair.position.z = z;
+
+              stair.receiveShadow = stair.castShadow = choice !== 'Low';
+
+              updateProgress(progress, progressInfo, 0.828);
+
+              scene.add(stair);
+              return stair;
+            } else {
+              const stair = new THREE.Mesh(geo, materials);
+
+              stair.position.x = x;
+              stair.position.y = y;
+              stair.position.z = z;
+
+              stair.receiveShadow = stair.castShadow = choice !== 'Low';
+
+              updateProgress(progress, progressInfo, 0.704);
+              scene.add(stair);
+              return stair;
+            }
+          };
+
+          //stairs
+          makeStairs(250, 15, 20, 0, 15, -3715, false, [], [], [], [], [], [], stairMaterials);
+          makeStairs(250, 15, 20, 0, 30, -3730, false, [], [], [], [], [], [], stairMaterials);
+          makeStairs(250, 15, 20, 0, 45, -3745, false, [], [], [], [], [], [], stairMaterials);
+          makeStairs(250, 15, 20, 0, 60, -3760, false, [], [], [], [], [], [], stairMaterials);
+          makeStairs(250, 15, 20, 0, 75, -3775, false, [], [], [], [], [], [], stairMaterials);
+          makeStairs(250, 15, 20, 0, 90, -3790, false, [], [], [], [], [], [], stairMaterials);
+          makeStairs(250, 15, 20, 0, 105, -3805, false, [], [], [], [], [], [], stairMaterials);
+          makeStairs(250, 15, 20, 0, 120, -3820, false, [], [], [], [], [], [], stairMaterials);
+          makeStairs(250, 15, 20, 0, 15, 3715, false, [], [], [], [], [], [], stairMaterials);
+          makeStairs(250, 15, 20, 0, 30, 3730, false, [], [], [], [], [], [], stairMaterials);
+          makeStairs(250, 15, 20, 0, 45, 3745, false, [], [], [], [], [], [], stairMaterials);
+          makeStairs(250, 15, 20, 0, 60, 3760, false, [], [], [], [], [], [], stairMaterials);
+          makeStairs(250, 15, 20, 0, 75, 3775, false, [], [], [], [], [], [], stairMaterials);
+          makeStairs(250, 15, 20, 0, 90, 3790, false, [], [], [], [], [], [], stairMaterials);
+          makeStairs(250, 15, 20, 0, 105, 3805, false, [], [], [], [], [], [], stairMaterials);
+          makeStairs(250, 15, 20, 0, 120, 3820, false, [], [], [], [], [], [], stairMaterials);
+          makeStairs(250, 15, 170, 0, 120, -3915, true, [3, 0.3], [3, 0.3], [3, 3], [3, 3], [3, 0.3], [3, 0.3], null);
+          makeStairs(250, 15, 170, 0, 120, 3915, true, [3, 0.3], [3, 0.3], [3, 3], [3, 3], [3, 0.3], [3, 0.3], null);
+
+          const makeCube = (url, w, h, d, x, y, z, rX = 1, rY = 1, wrapping, rtX = 0, rtY = 0, rtZ = 0) => {
+            const geo = new THREE.BoxBufferGeometry(w,h,d);
+
+            textureLoader.load(url, texture => {
+              texture.repeat.set(rX, rY);
+              texture.wrapS = texture.wrapT = wrapping;
+              texture.minFilter = THREE.LinearMipmapLinearFilter;
+              texture.anisotropy = choice === 'High' ? renderer.capabilities.getMaxAnisotropy() : choice === 'Medium' ? 4 : 1;
+
+              const mat = choice === 'Low' ? new THREE.MeshBasicMaterial({map: texture, color: 0x383838}) :
+              choice === 'Medium' ? new THREE.MeshPhongMaterial({map: texture, shininess: 85}) :
+              new THREE.MeshStandardMaterial({map: texture, roughness: 0, metalness: 0.9});
+
+              const cube = new THREE.Mesh(geo,mat);
+
+              cube.position.x = x;
+              cube.position.y = y;
+              cube.position.z = z;
+
+              cube.rotation.x = rtX;
+              cube.rotation.y = rtY;
+              cube.rotation.z = rtZ;
+
+              cube.receiveShadow = cube.castShadow = choice !== 'Low';
+
+              updateProgress(progress, progressInfo, 0.991);
+              scene.add(cube);
+              return cube;
+            });
+          }
+
+          const makeFloor = (w, h, d, x, y, z, rX = 1, rY = 1, wrapping) => {
+            const geo = new THREE.BoxBufferGeometry(w,h,d);
+
+            const textures = [
+              textureLoader.load('https://dl.dropbox.com/s/f4lsav6szpfzqev/floor_texture.jpg'),
+              textureLoader.load('https://dl.dropbox.com/s/rao520q2bxvwnx4/floor_under_the_rails.jpg'),
+              textureLoader.load('https://dl.dropbox.com/s/rao520q2bxvwnx4/floor_under_the_rails.jpg'),
+            ];
+
+            textures.map(texture => {
+              texture.wrapS = texture.wrapT = wrapping;
+              texture.minFilter = THREE.LinearMipmapLinearFilter;
+              texture.anisotropy = choice === 'High' ? renderer.capabilities.getMaxAnisotropy() : choice === 'Medium' ? 4 : 1;
+            });
+
+            textures[0].repeat.set(rX, rY);
+            textures[1].repeat.set(90, 1);
+            textures[2].repeat.set(11, 1);
+
+            const materials = choice === 'Low' ? [
+              new THREE.MeshBasicMaterial({map: textures[1], color: 0x383838}),
+              new THREE.MeshBasicMaterial({map: textures[1], color: 0x383838}),
+              new THREE.MeshBasicMaterial({map: textures[0], color: 0x383838}),
+              new THREE.MeshBasicMaterial({map: textures[0], color: 0x383838}),
+              new THREE.MeshBasicMaterial({map: textures[2], color: 0x383838}),
+              new THREE.MeshBasicMaterial({map: textures[2], color: 0x383838}),
+            ] : choice === 'Medium' ? [
+              new THREE.MeshPhongMaterial({map: textures[1], shininess: 85}),
+              new THREE.MeshPhongMaterial({map: textures[1], shininess: 85}),
+              new THREE.MeshPhongMaterial({map: textures[0], shininess: 85}),
+              new THREE.MeshPhongMaterial({map: textures[0], shininess: 85}),
+              new THREE.MeshPhongMaterial({map: textures[2], shininess: 85}),
+              new THREE.MeshPhongMaterial({map: textures[2], shininess: 85}),
+            ] : [
+              new THREE.MeshStandardMaterial({map: textures[1], roughness: 0, metalness: 0.9}),
+              new THREE.MeshStandardMaterial({map: textures[1], roughness: 0, metalness: 0.9}),
+              new THREE.MeshStandardMaterial({map: textures[0], roughness: 0, metalness: 0.9}),
+              new THREE.MeshStandardMaterial({map: textures[0], roughness: 0, metalness: 0.9}),
+              new THREE.MeshStandardMaterial({map: textures[2], roughness: 0, metalness: 0.9}),
+              new THREE.MeshStandardMaterial({map: textures[2], roughness: 0, metalness: 0.9}),
+            ];
+
+            const floor = new THREE.Mesh(geo,materials);
+
+            floor.position.x = x;
+            floor.position.y = y;
+            floor.position.z = z;
+
+            floor.receiveShadow = choice != 'Low';
+
+            updateProgress(progress, progressInfo, 0.914);
+            scene.add(floor);
+            return floor;
+          };
+
+          //floor
+          makeFloor(1000, 82.5, 8000, 0, -33.75, 0, 20, 160, THREE.RepeatWrapping);
+
+          //left wall
+          makeCube('https://dl.dropbox.com/s/z77xl1bpwr6rg7w/wall_texture.jpg', 15, 536.5, 8000, -773, 194.25, 0, 50, 3, THREE.RepeatWrapping);
+
+          //right wall
+          makeCube('https://dl.dropbox.com/s/z77xl1bpwr6rg7w/wall_texture.jpg', 15, 536.5, 8000, 773, 194.25, 0, 50, 3, THREE.RepeatWrapping);
+
+          //back wall
+          makeCube('https://dl.dropbox.com/s/z77xl1bpwr6rg7w/wall_texture.jpg', 1000, 430, 15, 0, 207.5, 4007.5, 6, 2.5, THREE.RepeatWrapping);
+
+          //front wall
+          makeCube('https://dl.dropbox.com/s/z77xl1bpwr6rg7w/wall_texture.jpg', 1000, 430, 15, 0, 207.5, -4007.5, 6, 2.5, THREE.RepeatWrapping);
+
+          //ceiling
+          makeCube('https://dl.dropbox.com/s/yfegu57rutzpx5c/ceiling_texture.jpg', 750, 15, 8000, 0, 380, 0, 5, 85, THREE.RepeatWrapping);
+          makeCube('https://dl.dropbox.com/s/yfegu57rutzpx5c/ceiling_texture.jpg', 400, 15, 8000, -568, 418.7, 0, 4, 85, THREE.RepeatWrapping, 0, 0, -PI / 16);
+          makeCube('https://dl.dropbox.com/s/yfegu57rutzpx5c/ceiling_texture.jpg', 400, 15, 8000, 568, 418.7, 0, 4, 85, THREE.RepeatWrapping, 0, 0, PI / 16);
+
+          //floor under the rails
+          makeCube('https://dl.dropbox.com/s/rao520q2bxvwnx4/floor_under_the_rails.jpg', 265.5, 1, 8000, -632.75, -74.5, 0, 3, 200, THREE.MirroredRepeatWrapping);
+          makeCube('https://dl.dropbox.com/s/rao520q2bxvwnx4/floor_under_the_rails.jpg', 265.5, 1, 8000, 632.75, -74.5, 0, 3, 200, THREE.MirroredRepeatWrapping);
+
+          const columnMaterial = choice === 'Low' ? new THREE.MeshBasicMaterial({map: textureLoader.load('https://dl.dropbox.com/s/qudggiypt3k3c9n/steel.jpg'), color: 0x454545}) :
+          choice === 'Medium' ? new THREE.MeshPhongMaterial({map: textureLoader.load('https://dl.dropbox.com/s/qudggiypt3k3c9n/steel.jpg'), shininess: 85}) :
+          new THREE.MeshStandardMaterial({map: textureLoader.load('https://dl.dropbox.com/s/qudggiypt3k3c9n/steel.jpg'), roughness: 0, metalness: 0.9});
+
+          const makeColumn = (w, h, d, x, y, z, mat) => {
+            const geo = new THREE.BoxBufferGeometry(w,h,d);
+
+            const column = new THREE.Mesh(geo,mat);
+
+            column.position.x = x;
+            column.position.y = y;
+            column.position.z = z;
+
+            column.receiveShadow = column.castShadow = choice !== 'Low';
+
+            scene.add(column);
+            updateProgress(progress, progressInfo, 0.824);
+            return column;
+          }
+
+          //left columns
+          for(let i = -3600; i <= 3600; i+= 300) makeColumn(60, 370, 60, -300, 189.8, i, columnMaterial);
+
+          //right columns
+          for(let i = -3600; i <= 3600; i+= 300) makeColumn(60, 370, 60, 300, 189.8, i, columnMaterial);
+
+          const loadGLTF = (url, rX = 0, rY = 0, rZ = 0, sX = 1, sY = 1, sZ = 1, x = 0, y = 0, z = 0, isAnimated = false, to, steps, action, castShadow = false, receiveShadow = false) => {
+            const loader = new GLTFLoader();
+            loader.load(url, GLTF => {
+              const root = GLTF.scene;
+              root.scale.x = sX;
+              root.scale.y = sY;
+              root.scale.z = sZ;
+
+              root.position.x = x;
+              root.position.y = y;
+              root.position.z = z;
+
+              root.rotation.x = rX;
+              root.rotation.y = rY;
+              root.rotation.z = rZ;
+
+              root.traverse(obj => {
+                if (obj.castShadow !== undefined && choice !== 'Low') {
+                  obj.castShadow = castShadow;
+                  obj.receiveShadow = receiveShadow;
+                }
+              });
+
+              if (isAnimated) {
+                function animate() {
+                  if (action === '+') {
+                    root.position.z > to ? root.position.z = -to : root.position.z;
+                    root.position.z += steps;
+                  } else if (action === '-') {
+                    root.position.z < to ? root.position.z = -to : root.position.z;
+                    root.position.z -= steps;
+                  }
+                  requestAnimationFrame(animate);
+                }
+                setTimeout(() => requestAnimationFrame(animate), 1000);
+              }
+
+              updateProgress(progress, progressInfo, 1.2672);
+              scene.add(root);
+              return root;
+            });
+          };
+
+          //doors
+          loadGLTF('https://dl.dropbox.com/s/mx695mzy1s4qsy7/door.glb', 0, 0, 0, 80, 80, 70, -5, 127.5, -3986, false, 0, 0, '', false, true);
+          loadGLTF('https://dl.dropbox.com/s/mx695mzy1s4qsy7/door.glb', 0, 0, 0, 80, 80, 70, -5, 127.5, 4013, false, 0, 0, '', false, true);
+
+          //benches
+          loadGLTF('https://dl.dropbox.com/s/5jborz1bku3lu2g/benches.glb', 0, PI / 2, 0, 500, 500, 500, 40, 7.5, 0, false, 0, 0, '', true, false);
+          loadGLTF('https://dl.dropbox.com/s/5jborz1bku3lu2g/benches.glb', 0, PI / 2, 0, 500, 500, 500, 40, 7.5, 2000, false, 0, 0, '', true, false);
+          loadGLTF('https://dl.dropbox.com/s/5jborz1bku3lu2g/benches.glb', 0, PI / 2, 0, 500, 500, 500, 40, 7.5, -2000, false, 0, 0, '', true, false);
+
+          //trash bins
+          loadGLTF('https://dl.dropbox.com/s/1jd0gidi44jj09t/trash_bin.glb', 0, -PI / 2, 0, 100, 100, 100, -250, 7.5, 0, false, 0, 0, '', true, true);
+          loadGLTF('https://dl.dropbox.com/s/1jd0gidi44jj09t/trash_bin.glb', 0, -PI / 2, 0, 100, 100, 100, -250, 7.5, 2100, false, 0, 0, '', true, true);
+          loadGLTF('https://dl.dropbox.com/s/1jd0gidi44jj09t/trash_bin.glb', 0, -PI / 2, 0, 100, 100, 100, -250, 7.5, -2100, false, 0, 0, '', true, true);
+          loadGLTF('https://dl.dropbox.com/s/1jd0gidi44jj09t/trash_bin.glb', 0, PI / 2, 0, 100, 100, 100, 250, 7.5, 0, false, 0, 0, '', true, true);
+          loadGLTF('https://dl.dropbox.com/s/1jd0gidi44jj09t/trash_bin.glb', 0, PI / 2, 0, 100, 100, 100, 250, 7.5, 2100, false, 0, 0, '', true, true);
+          loadGLTF('https://dl.dropbox.com/s/1jd0gidi44jj09t/trash_bin.glb', 0, PI / 2, 0, 100, 100, 100, 250, 7.5, -2100, false, 0, 0, '', true, true);
+
+          //lamps
+          loadGLTF('https://dl.dropbox.com/s/lrque2pnlai2lgp/lamp.glb', PI, 0, 0, 80, 80, 80, -18, 350, -18);
+          loadGLTF('https://dl.dropbox.com/s/lrque2pnlai2lgp/lamp.glb', PI, 0, 0, 80, 80, 80, -18, 350, 1918);
+          loadGLTF('https://dl.dropbox.com/s/lrque2pnlai2lgp/lamp.glb', PI, 0, 0, 80, 80, 80, -18, 350, -2118);
+
+          //rails
+          loadGLTF('https://dl.dropbox.com/s/1j16etlbegvgx0k/rails.glb', 0, 0, 0, 60, 50, 80, -630, -74, 0, false, null, null, '', false, true);
+          loadGLTF('https://dl.dropbox.com/s/1j16etlbegvgx0k/rails.glb', 0, 0, 0, 60, 50, 80, -630, -74, -2390, false, null, null, '', false, true);
+          loadGLTF('https://dl.dropbox.com/s/1j16etlbegvgx0k/rails.glb', 0, 0, 0, 60, 50, 80, -630, -74, -4780, false, null, null, '', false, true);
+          loadGLTF('https://dl.dropbox.com/s/1j16etlbegvgx0k/rails.glb', 0, 0, 0, 60, 50, 80, -630, -74, 2390, false, null, null, '', false, true);
+          loadGLTF('https://dl.dropbox.com/s/1j16etlbegvgx0k/rails.glb', 0, 0, 0, 60, 50, 80, -630, -74, 4780, false, null, null, '', false, true);
+          loadGLTF('https://dl.dropbox.com/s/1j16etlbegvgx0k/rails.glb', 0, 0, 0, 60, 50, 80, 630, -74, 0, false, null, null, '', false, true);
+          loadGLTF('https://dl.dropbox.com/s/1j16etlbegvgx0k/rails.glb', 0, 0, 0, 60, 50, 80, 630, -74, -2390, false, null, null, '', false, true);
+          loadGLTF('https://dl.dropbox.com/s/1j16etlbegvgx0k/rails.glb', 0, 0, 0, 60, 50, 80, 630, -74, -4780, false, null, null, '', false, true);
+          loadGLTF('https://dl.dropbox.com/s/1j16etlbegvgx0k/rails.glb', 0, 0, 0, 60, 50, 80, 630, -74, 2390, false, null, null, '', false, true);
+          loadGLTF('https://dl.dropbox.com/s/1j16etlbegvgx0k/rails.glb', 0, 0, 0, 60, 50, 80, 630, -74, 4780, false, null, null, '', false, true);
+
+          //train
+          loadGLTF('https://dl.dropbox.com/s/nhdnznymp42cosr/train.glb', 0, 0, 0, 2.5, 2.5, 2.5, -630, -62.2, 40, true, 7500, 25, '+', true, true);
+          loadGLTF('https://dl.dropbox.com/s/nhdnznymp42cosr/train.glb', 0, 0, 0, 2.5, 2.5, 2.5, 630, -62.2, 40, true, -7500, 25, '-', true, true);
+
+          const makeSpotLight = (lX, lY, lZ, tX, tY, tZ) => {
+            const color = 0xFFFFFF;
+            const intensity = choice === 'High' ? 5 : choice === 'Medium' ? 0.75 : 0.5;
+
+            const light = new THREE.SpotLight(color, intensity);
+            light.position.set(lX, lY, lZ);
+            light.target.position.set(tX, tY, tZ);
+
+            if (choice !== 'Low') {
+              light.castShadow = light.receiveShadow = true;
+              light.shadow.mapSize.width = light.shadow.mapSize.height = choice === 'Medium' ? 512 : 1024;
+              light.penumbra = choice === 'High' ? 0.5 : 0.35;
+            }
+
+            scene.add(light);
+
+            light.angle = choice === 'High' ? 1.28 : choice === 'Medium' ? 1.2 : 1.05;
+
+            function updateCamera() {
+              light.target.updateMatrixWorld();
+              light.shadow.camera.updateProjectionMatrix();
+            }
+
+            setTimeout(updateCamera);
+
+            updateProgress(progress, progressInfo, 0.504);
+          }
+
+          makeSpotLight(0, 285, 0, 0, 0, 0);
+          makeSpotLight(0, 285, 1900, 0, 0, 1900);
+          makeSpotLight(0, 285, -2100, 0, 0, -2100);
+
+          {
+            const color = 0xFFFFFF;
+            const intensity = choice === 'Medium' ? 0.3 : choice === 'High' ? 0.5 : 0.75;
+            const light = new THREE.AmbientLight(color, intensity);
+            scene.add(light);
+          }
+
+          const resize = renderer => {
+            const canvas = renderer.domElement;
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            const needResize = canvas.width !== width || canvas.height !== height;
+            return needResize ? renderer.setSize(width, height, false) : needResize;
+          };
+
+          const render = () => {
+            if (resize(renderer)) {
+              const canvas = renderer.domElement;
+              camera.aspect = canvas.clientWidth / canvas.clientHeight;
+              camera.updateProjectionMatrix();
+            }
+
+            renderer.render(scene,camera);
+            stats.update();
+
+            requestAnimationFrame(render);
+          }
+
+          requestAnimationFrame(render);
+        };
+      };
+
+     window.onload = main;
+
+    </script>
+  </body>
+</html>
